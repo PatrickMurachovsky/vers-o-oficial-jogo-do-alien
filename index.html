@@ -40,6 +40,7 @@
         var fogo;
         var plataforma;
         var moeda;
+        var coracao;
         var pontuacao = 0;
         var placar;
 
@@ -50,6 +51,7 @@
             this.load.image('turbo_nave', 'assets/turbo.png');
             this.load.image('plataforma_tijolo', 'assets/tijolos.png');
             this.load.image('moeda', 'assets/moeda.png');
+            this.load.image('coracao', 'assets/coracao.png');
         }
 
         function create() {
@@ -70,42 +72,52 @@
             moeda.setBounce(0.7);
             this.physics.add.collider(moeda, plataforma);
 
-            placar = this.add.text(50, 50, 'Moedas:'+ pontuacao, {fontSize:'45px', fill:'#495613'});
+            coracao = this.physics.add.sprite(larguraJogo/2, 0, 'coracao');
+            coracao.setCollideWorldBounds(true);
+            coracao.setBounce(0.7);
+            this.physics.add.collider(coracao, plataforma);
 
-            this.physics.add.overlap(alien, moeda, function(){
+            placar = this.add.text(50, 50, 'Moedas: ' + pontuacao, { fontSize: '45px', fill: '#495613' });
 
+            // Interação com a moeda
+            this.physics.add.overlap(alien, moeda, function () {
                 moeda.setVisible(false);
                 var posicaoMoeda_Y = Phaser.Math.RND.between(50, 650);
-                moeda.setPosition(posicaoMoeda_Y, 100);
-                pontuacao +=1;
-                placar.setText('Moedas:' + pontuacao); 
-                moeda.setVisible(true); 
+                moeda.setPosition(Phaser.Math.RND.between(50, larguraJogo - 50), posicaoMoeda_Y);
+                pontuacao += 1;
+                placar.setText('Moedas: ' + pontuacao); 
+                moeda.setVisible(true);
             });
 
+            // Interação com o coração
+            this.physics.add.overlap(alien, coracao, function () {
+                coracao.setVisible(false);
+                var posicaoCoracao_Y = Phaser.Math.RND.between(50, 650);
+                coracao.setPosition(Phaser.Math.RND.between(50, larguraJogo - 50), posicaoCoracao_Y);
+                // Aqui você pode adicionar algum comportamento ao coletar o coração
+                console.log("Coração coletado!");
+                coracao.setVisible(true);
+            });
         }
 
-
         function update() {
-
             if (teclado.left.isDown) {
-                alien.setVelocityX(-400); } 
-          
-            else if (teclado.right.isDown) {
-                alien.setVelocityX(400); } 
-
-            else { alien.setVelocityX(0); }
+                alien.setVelocityX(-400);
+            } else if (teclado.right.isDown) {
+                alien.setVelocityX(400);
+            } else {
+                alien.setVelocityX(0);
+            }
 
             if (teclado.up.isDown) {
                 alien.setVelocityY(-400);
                 ativarTurbo();
-            } 
-            
-            else { semTurbo(); }
+            } else {
+                semTurbo();
+            }
 
-            fogo.setPosition(alien.x, alien.y + alien.height/2);
-
+            fogo.setPosition(alien.x, alien.y + alien.height / 2);
         }
-
 
         function ativarTurbo() {
             fogo.setVisible(true);
@@ -114,13 +126,6 @@
         function semTurbo() {
             fogo.setVisible(false);
         }
-
-
     </script>
 </body>
 </html>
-
-
-
-
-
